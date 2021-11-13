@@ -1,0 +1,77 @@
+﻿<mah:MetroWindow x:Class="AcraBackend.Client.MainWindow"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:model="clr-namespace:AcraBackend.Common.Database.Model;assembly=AcraBackend.Common"
+             xmlns:mah="http://metro.mahapps.com/winfx/xaml/controls"
+             xmlns:client="clr-namespace:AcraBackend.Client"
+             xmlns:model1="clr-namespace:AcraBackend.Client.Model"
+             mc:Ignorable="d" Title="Crash Reports" Height="600" Width="800" Loaded="MainWindow_OnLoaded"
+             d:DataContext="{d:DesignInstance Type=model1:AppViewModel, IsDesignTimeCreatable=False}">
+    <mah:MetroWindow.Resources>
+        <Style x:Key="ListViewTextBlockStyle" TargetType="TextBlock">
+            <Setter Property="Text">
+                <Setter.Value>
+                    <MultiBinding StringFormat="{}{0} [{1}]">
+                        <Binding Path="StackTraceHash"/>
+                        <Binding Path="Occurences"/>
+                    </MultiBinding>
+                </Setter.Value>
+            </Setter>
+            <Style.Triggers>
+                <DataTrigger Binding="{Binding Closed, Converter={StaticResource InvertibleNullToBooleanConverter}, ConverterParameter=Inverted}" Value="False">
+                    <Setter Property="Text">
+                        <Setter.Value>
+                            <MultiBinding StringFormat="{}{0} [{1}] ({2})">
+                                <Binding Path="StackTraceHash"/>
+                                <Binding Path="Occurences"/>
+                                <Binding Path="DaysClosed"/>
+                            </MultiBinding>
+                        </Setter.Value>
+                    </Setter>
+                </DataTrigger>
+                <DataTrigger Binding="{Binding Closed, Converter={StaticResource InvertibleNullToBooleanConverter}, ConverterParameter=Inverted}" Value="False">
+                    <Setter Property="TextDecorations" Value="Strikethrough"/>
+                </DataTrigger>
+            </Style.Triggers>
+        </Style>
+    </mah:MetroWindow.Resources>
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="45"/>
+            <RowDefinition Height="1" />
+            <RowDefinition Height="195*"/>
+        </Grid.RowDefinitions>
+        <StackPanel Orientation="Horizontal">
+            <TextBlock Margin="10,0,0,0" Text="Package Name:" VerticalAlignment="Center"/>
+            <ComboBox x:Name="ComboBoxPackageNames" Margin="10,0,0,0" VerticalAlignment="Center" Width="300" ItemsSource="{Binding DataViewModel.PackageNames}" SelectedItem="{Binding DataViewModel.SelectedPackageName}" />
+        </StackPanel>
+        <Border Grid.Row="1" BorderBrush="{DynamicResource MahApps.Brushes.Accent4}" BorderThickness="1" Margin="0,0,0,0" />
+        <Grid Grid.Row="2">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="100"/>
+                <ColumnDefinition Width="1"/>
+                <ColumnDefinition Width="*"/>
+            </Grid.ColumnDefinitions>
+            <ListView x:Name="ListView" ItemsSource="{Binding DataViewModel.Reports}" SelectedItem="{Binding DataViewModel.SelectedReport}">
+                <ListView.ItemTemplate>
+                    <DataTemplate DataType="{x:Type model:FatalReport}">
+                        <StackPanel Orientation="Horizontal">
+                            <TextBlock Style="{StaticResource ListViewTextBlockStyle}">
+                                <!--<TextBlock.Text>
+                                    <MultiBinding StringFormat="{}{0} [{1}]">
+                                        <Binding Path="StackTraceHash"/>
+                                        <Binding Path="Occurences"/>
+                                    </MultiBinding>
+                                </TextBlock.Text>-->
+                            </TextBlock>
+                        </StackPanel>
+                    </DataTemplate>
+                </ListView.ItemTemplate>
+            </ListView>
+            <Border Grid.Column="1" BorderBrush="{DynamicResource MahApps.Brushes.Accent4}" BorderThickness="1" Margin="0,0,0,10" />
+            <client:FatalReportControl Grid.Column="2" DataContext="{Binding DataViewModel}" />
+        </Grid>
+    </Grid>
+</mah:MetroWindow>

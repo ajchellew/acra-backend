@@ -1,0 +1,119 @@
+﻿<UserControl x:Class="AcraBackend.Client.FatalReportControl"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:model="clr-namespace:AcraBackend.Client.Model"
+             xmlns:iconPacks="http://metro.mahapps.com/winfx/xaml/iconpacks"
+             mc:Ignorable="d" 
+             d:DesignHeight="450" d:DesignWidth="800" d:DataContext="{d:DesignInstance Type=model:DataViewModel, IsDesignTimeCreatable=False}">
+    <UserControl.Resources>
+        <Style x:Key="FieldTextBoxStyle" TargetType="TextBox">
+            <Setter Property="IsReadOnly" Value="True" />
+            <Setter Property="VerticalAlignment" Value="Center" />
+        </Style>
+    </UserControl.Resources>
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition />
+            <RowDefinition Height="Auto" />
+        </Grid.RowDefinitions>
+
+        <StackPanel Orientation="Horizontal" Margin="0,10,0,0">
+            <iconPacks:PackIconMaterial Kind="Numeric" VerticalAlignment="Center" Margin="10" ToolTip="App Version" />
+            <TextBox Style="{StaticResource FieldTextBoxStyle}" Width="100">
+                <TextBox.Text>
+                    <MultiBinding StringFormat="{}{0} ({1})">
+                        <Binding Path="SelectedReport.VersionName" Mode="OneWay"/>
+                        <Binding Path="SelectedReport.VersionCode" Mode="OneWay"/>
+                    </MultiBinding>
+                </TextBox.Text>
+            </TextBox>
+
+            <iconPacks:PackIconMaterial Kind="TimerSandEmpty" VerticalAlignment="Center" Margin="10" ToolTip="Time to Crash (Mins between app start and crash)" />
+            <TextBox Text="{Binding SelectedReport.TimeToCrash, Mode=OneWay}" Style="{StaticResource FieldTextBoxStyle}" Width="40"/>
+
+            <iconPacks:PackIconMaterial Kind="Calendar" VerticalAlignment="Center" Margin="10" ToolTip="Last Occurence" />
+            <TextBox Text="{Binding SelectedReport.LastOccurence}" Style="{StaticResource FieldTextBoxStyle}" Width="140"/>
+
+            <iconPacks:PackIconMaterial Kind="Close" VerticalAlignment="Center" Margin="10" ToolTip="Closed" Visibility="{Binding SelectedReport.Closed, Converter={StaticResource InvertibleNullToVisibilityConverter}}" />
+            <TextBox Text="{Binding SelectedReport.Closed}" Style="{StaticResource FieldTextBoxStyle}" Width="140" Visibility="{Binding SelectedReport.Closed, Converter={StaticResource InvertibleNullToVisibilityConverter}}"/>
+        </StackPanel>
+
+        <StackPanel Grid.Row="1" Orientation="Horizontal">
+            <iconPacks:PackIconMaterial Kind="Devices" VerticalAlignment="Center" Margin="10" ToolTip="Device [Brand/Model/Product]" />
+            <TextBox Text="{Binding SelectedReport.Brand}" Style="{StaticResource FieldTextBoxStyle}" Width="90"/>
+            <TextBox Text="{Binding SelectedReport.Model}" Style="{StaticResource FieldTextBoxStyle}" Width="90"/>
+            <TextBox Text="{Binding SelectedReport.Product}" Style="{StaticResource FieldTextBoxStyle}" Width="90"/>
+
+            <iconPacks:PackIconMaterial Kind="Android" VerticalAlignment="Center" Margin="10" ToolTip="Android Version" />
+            <TextBox Text="{Binding SelectedReport.AndroidVersion}" Style="{StaticResource FieldTextBoxStyle}" Width="30"/>
+            <iconPacks:PackIconMaterial Kind="ChartPie" VerticalAlignment="Center" Margin="10" ToolTip="Free Space/Total Space" />
+            <TextBox Style="{StaticResource FieldTextBoxStyle}" Width="60">
+                <TextBox.Text>
+                    <MultiBinding StringFormat="{}{0}/{1}">
+                        <Binding Path="SelectedReport.RoundedAvailableGbs" Mode="OneWay"/>
+                        <Binding Path="SelectedReport.RoundedTotalGbs" Mode="OneWay"/>
+                    </MultiBinding>
+                </TextBox.Text>
+            </TextBox>
+            <TextBlock Margin="2,10,10,10" Text="GB" VerticalAlignment="Center"/>
+        </StackPanel>
+
+        <TabControl Margin="4,0" Grid.Row="2" TabStripPlacement="Bottom" FontSize="12"
+                    IsEnabled="{Binding SelectedReport, Converter={StaticResource InvertibleNullToBooleanConverter}}">
+            <TabItem>
+                <TabItem.HeaderTemplate>
+                    <DataTemplate>
+                        <iconPacks:PackIconMaterial Kind="ClipboardList" Margin="10" ToolTip="Stack Trace" />
+                    </DataTemplate>
+                </TabItem.HeaderTemplate>
+                <TextBox Text="{Binding SelectedReport.StackTrace}" HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Auto" />
+            </TabItem>
+            <TabItem>
+                <TabItem.HeaderTemplate>
+                    <DataTemplate>
+                        <iconPacks:PackIconMaterial Kind="Cat" Margin="10" ToolTip="Logcat" />
+                    </DataTemplate>
+                </TabItem.HeaderTemplate>
+                <TextBox Text="{Binding SelectedReport.Logcat}" HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Auto" />
+            </TabItem>
+            <TabItem>
+                <TabItem.HeaderTemplate>
+                    <DataTemplate>
+                        <iconPacks:PackIconMaterial Kind="Database" Margin="10" ToolTip="Environment" />
+                    </DataTemplate>
+                </TabItem.HeaderTemplate>
+                <TextBox Text="{Binding SelectedReport.Environment}" HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Auto" />
+            </TabItem>
+            <TabItem>
+                <TabItem.HeaderTemplate>
+                    <DataTemplate>
+                        <iconPacks:PackIconMaterial Kind="CellphoneScreenshot" Margin="10" ToolTip="Display" />
+                    </DataTemplate>
+                </TabItem.HeaderTemplate>
+                <TextBox Text="{Binding SelectedReport.Display}" HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Auto" />
+            </TabItem>
+        </TabControl>
+
+        <StackPanel Orientation="Horizontal" Grid.Row="3" HorizontalAlignment="Right" Margin="4" IsEnabled="{Binding SelectedReport, Converter={StaticResource InvertibleNullToBooleanConverter}}">
+            <Button Padding="12" Click="ButtonClose_OnClick"
+                    Visibility="{Binding SelectedReport.Closed, Converter={StaticResource InvertibleNullToVisibilityConverter}, ConverterParameter=Inverted}">
+                <StackPanel Orientation="Horizontal">
+                    <iconPacks:PackIconMaterial Kind="Close" Margin="4" ToolTip="Close Report" />
+                    <TextBlock VerticalAlignment="Center" FontSize="12" Margin="10,0">Close Report</TextBlock>
+                </StackPanel>
+            </Button>
+            <Button Padding="12" Click="ButtonDelete_OnClick"
+                    Visibility="{Binding SelectedReport.Closed, Converter={StaticResource InvertibleNullToVisibilityConverter}}">
+                <StackPanel Orientation="Horizontal">
+                    <iconPacks:PackIconMaterial Kind="Delete" Margin="4" ToolTip="Delete from Database" />
+                    <TextBlock VerticalAlignment="Center" FontSize="12" Margin="10,0">Delete Report</TextBlock>
+                </StackPanel>
+            </Button>
+        </StackPanel>
+
+    </Grid>
+</UserControl>
