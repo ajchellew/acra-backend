@@ -1,7 +1,7 @@
 # acra-backend
 .NET C# / WPF backend server and client for capturing and viewing Android ACRA crash reports over HTTPS 
 
-Whilst signifantly better backend solutions exist, we have C# applications as backend servers and wanted to add capturing the crash reports directly to these servers, without running a docker container for example.
+Whilst significantly better backend solutions exist, we have C# applications as backend servers and wanted to add capturing the crash reports directly to these servers, without running a docker container for example.
 
 ## Server 
 
