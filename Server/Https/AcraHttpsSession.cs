@@ -66,7 +66,7 @@ namespace AcraBackend.Server.Https
 
         private void AddToDatabase(string json)
         {
-            var report = new CrashReport(json);
+            var report = CrashReport.FromJson(json);
 
             if (!report.IsSilent)
             {

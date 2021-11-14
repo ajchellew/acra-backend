@@ -1,6 +1,7 @@
 ﻿using System;
 using AcraBackend.Common.Database.Model;
-using Newtonsoft.Json.Linq;
+using AcraBackend.Server.Utils;
+using Newtonsoft.Json;
 
 namespace AcraBackend.Server
 {
@@ -9,115 +10,72 @@ namespace AcraBackend.Server
     /// </summary>
     public class CrashReport
     {
-        private const string IdField = "ID";
-        private const string ProductField = "PRODUCT";
-        private const string BrandField = "BRAND";
-        private const string PhoneModelField = "PHONE_MODEL";
-        private const string AndroidVersionField = "ANDROID_VERSION";
-        private const string AvailableMemorySizeField = "AVAILABLE_MEM_SIZE";
-        private const string TotalMemorySizeField = "TOTAL_MEM_SIZE";
-        private const string EnvironmentField = "ENVIRONMENT";
-        private const string DisplayField = "DISPLAY";
-        private const string LogcatField = "LOGCAT";
-        private const string StackTraceField = "STACK_TRACE";
-        private const string StackTraceHashField = "STACK_TRACE_HASH";
-        private const string AppStartDateField = "USER_APP_START_DATE";
-        private const string CrashDateField = "USER_CRASH_DATE";
-        private const string PackageNameField = "PACKAGE_NAME";
-        private const string VersionNameField = "APP_VERSION_NAME";
-        private const string VersionCodeField = "APP_VERSION_CODE";
-        private const string IsSilentField = "IS_SILENT";
-        private const string CustomDataField = "CUSTOM_DATA";
+        [JsonProperty(PropertyName = "ID")]
+        public string Id { get; set; }
 
-        public string Product { get; }
-        public string Brand { get; }
-        public string Model { get; }
-        public int AndroidVersion { get; }
-        public long AvailableMemorySize { get; }
-        public long TotalMemorySize { get; }
-        public string Environment { get; }
-        public string Display { get; }
-        public string Logcat { get; }
-        public string StackTrace { get; }
-        public string StackTraceHash { get; }
-        public DateTime AppStartDate { get; }
-        public DateTime CrashDate { get; }
-        public string PackageName{ get; }
-        public string VersionName { get; }
-        public int VersionCode { get; }
-        public string CustomData { get; }
-        public bool IsSilent { get; }
+        [JsonProperty(PropertyName = "PRODUCT")]
+        public string Product { get; set; }
 
-        public CrashReport(string json)
+        [JsonProperty(PropertyName = "BRAND")]
+        public string Brand { get; set; }
+
+        [JsonProperty(PropertyName = "PHONE_MODEL")]
+        public string Model { get; set; }
+
+        [JsonProperty(PropertyName = "ANDROID_VERSION")]
+        public int AndroidVersion { get; set; }
+
+        [JsonProperty(PropertyName = "AVAILABLE_MEM_SIZE")]
+        public long AvailableMemorySize { get; set; }
+
+        [JsonProperty(PropertyName = "TOTAL_MEM_SIZE")]
+        public long TotalMemorySize { get; set; }
+
+        [JsonConverter(typeof(RawJsonConverter))]
+        [JsonProperty(PropertyName = "ENVIRONMENT")]
+        public string Environment { get; set; }
+
+        [JsonConverter(typeof(RawJsonConverter))]
+        [JsonProperty(PropertyName = "DISPLAY")]
+        public string Display { get; set; }
+
+        [JsonProperty(PropertyName = "LOGCAT")]
+        public string Logcat { get; set; }
+
+        [JsonProperty(PropertyName = "STACK_TRACE")]
+        public string StackTrace { get; set; }
+
+        [JsonProperty(PropertyName = "STACK_TRACE_HASH")]
+        public string StackTraceHash { get; set; }
+
+        [JsonProperty(PropertyName = "USER_APP_START_DATE")]
+        public DateTime AppStartDate { get; set; }
+
+        [JsonProperty(PropertyName = "USER_CRASH_DATE")]
+        public DateTime CrashDate { get; set; }
+
+        [JsonProperty(PropertyName = "PACKAGE_NAME")]
+        public string PackageName{ get; set; }
+
+        [JsonProperty(PropertyName = "APP_VERSION_NAME")]
+        public string VersionName { get; set; }
+
+        [JsonProperty(PropertyName = "APP_VERSION_CODE")]
+        public int VersionCode { get; set; }
+
+        [JsonConverter(typeof(RawJsonConverter))]
+        [JsonProperty(PropertyName = "CUSTOM_DATA")]
+        public string CustomData { get; set; }
+
+        [JsonProperty(PropertyName = "IS_SILENT")]
+        public bool IsSilent { get; set; }
+
+        public static CrashReport FromJson(string json)
         {
-            var jObject = JObject.Parse(json);
-            foreach (var keyValuePair in jObject)
+            return JsonConvert.DeserializeObject<CrashReport>(json, new JsonSerializerSettings
             {
-                if (keyValuePair.Value == null)
-                    continue;
-
-                var value = keyValuePair.Value.ToString();
-
-                switch (keyValuePair.Key)
-                {
-                    case ProductField:
-                        Product = value;
-                        break;
-                    case BrandField:
-                        Brand = value;
-                        break;
-                    case PhoneModelField:
-                        Model = value;
-                        break;
-                    case AndroidVersionField:
-                        AndroidVersion = int.Parse(value);
-                        break;
-                    case AvailableMemorySizeField:
-                        AvailableMemorySize = long.Parse(value);
-                        break;
-                    case TotalMemorySizeField:
-                        TotalMemorySize = long.Parse(value);
-                        break;
-                    case EnvironmentField:
-                        Environment = value;
-                        break;
-                    case DisplayField:
-                        Display = value;
-                        break;
-                    case LogcatField:
-                        Logcat = value;
-                        break;
-                    case StackTraceField:
-                        StackTrace = value;
-                        break;
-                    case StackTraceHashField:
-                        StackTraceHash = value;
-                        break;
-                    case AppStartDateField:
-                        AppStartDate = DateTime.Parse(value);
-                        DateTime.SpecifyKind(AppStartDate, DateTimeKind.Utc);
-                        break;
-                    case CrashDateField:
-                        CrashDate = DateTime.Parse(value);
-                        DateTime.SpecifyKind(CrashDate, DateTimeKind.Utc);
-                        break;
-                    case PackageNameField:
-                        PackageName = value;
-                        break;
-                    case VersionNameField:
-                        VersionName = value;
-                        break;
-                    case VersionCodeField:
-                        VersionCode = int.Parse(value);
-                        break;
-                    case IsSilentField:
-                        IsSilent = bool.Parse(value);
-                        break;
-                    case CustomDataField:
-                        CustomData = value;
-                        break;
-                }
-            }
+                DateTimeZoneHandling = DateTimeZoneHandling.Utc
+            });
         }
 
         public FatalReport ToFatal()
