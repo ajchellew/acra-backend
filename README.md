@@ -35,6 +35,7 @@ fun configure(builder: CoreConfigurationBuilder) {
 
 Also overwrite the `cert.pfx` in the server Res folder
 
+ACRA must be set to JSON ReportFormat and the HttpSender use Method POST (default)
 
 ## Client
 
