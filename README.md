@@ -19,6 +19,8 @@ To generate certificates, in Windows `openssl` can likely be found at `C:\Progra
 
 `openssl pkcs12 -export -out cert.pfx -inkey key.pem -in cert.cer`
 
+The application expects the certificate password to be `password123` but this can be changed.
+
 Copy the `cert.cer` to the app's `res/raw`
 
 <pre>
